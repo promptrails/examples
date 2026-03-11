@@ -25,6 +25,9 @@ export PROMPTRAILS_API_KEY="pr_key_..."
 | **MCP Tools** — External tool integrations | [View](python/mcp-tools/) | [View](javascript/mcp-tools/) | [View](go/mcp-tools/) |
 | **Webhook Triggers** — Event-driven agent execution | [View](python/webhook-triggers/) | [View](javascript/webhook-triggers/) | [View](go/webhook-triggers/) |
 | **A2A** — Agent-to-Agent communication | [View](python/a2a/) | [View](javascript/a2a/) | [View](go/a2a/) |
+| **Media Studio** — Generate images, speech, and video | [View](python/media-studio/) | [View](javascript/media-studio/) | [View](go/media-studio/) |
+| **Assets** — Manage generated media assets | [View](python/assets/) | [View](javascript/assets/) | [View](go/assets/) |
+| **Media Models** — Browse available media models | [View](python/media-models/) | [View](javascript/media-models/) | [View](go/media-models/) |
 
 ## SDK Installation
 

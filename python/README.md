@@ -32,3 +32,6 @@ uv run python/chat/main.py
 | [mcp-tools/](mcp-tools/) | MCP tool management |
 | [webhook-triggers/](webhook-triggers/) | Event-driven agent execution |
 | [a2a/](a2a/) | Agent-to-Agent communication |
+| [media-studio/](media-studio/) | Generate images, speech, and video |
+| [assets/](assets/) | Manage generated media assets |
+| [media-models/](media-models/) | Browse available media models |
