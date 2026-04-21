@@ -19,6 +19,7 @@ export PROMPTRAILS_API_KEY="pr_key_..."
 | **Agents** — Create, execute, and manage agents | [View](python/agents/) | [View](javascript/agents/) | [View](go/agents/) |
 | **Prompts** — Template management and execution | [View](python/prompts/) | [View](javascript/prompts/) | [View](go/prompts/) |
 | **Chat** — Multi-turn conversations | [View](python/chat/) | [View](javascript/chat/) | [View](go/chat/) |
+| **Streaming** — Live SSE events for chat turns and executions | [View](python/streaming/) | [View](javascript/streaming/) | [View](go/streaming/) |
 | **Traces** — Execution tracing and observability | [View](python/traces/) | [View](javascript/traces/) | [View](go/traces/) |
 | **Executions** — Monitor execution history | [View](python/executions/) | [View](javascript/executions/) | [View](go/executions/) |
 | **Costs** — Track LLM usage costs | [View](python/costs/) | [View](javascript/costs/) | [View](go/costs/) |
@@ -33,17 +34,17 @@ export PROMPTRAILS_API_KEY="pr_key_..."
 
 **Python:**
 ```bash
-pip install promptrails
+pip install "promptrails>=0.3.0"
 ```
 
 **JavaScript/TypeScript:**
 ```bash
-npm install @promptrails/sdk
+npm install @promptrails/sdk@^0.3.1
 ```
 
 **Go:**
 ```bash
-go get github.com/promptrails/go-sdk
+go get github.com/promptrails/go-sdk@v0.3.1
 ```
 
 ## Links
