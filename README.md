@@ -24,7 +24,7 @@ export PROMPTRAILS_API_KEY="pr_key_..."
 | **Executions** — Monitor execution history | [View](python/executions/) | [View](javascript/executions/) | [View](go/executions/) |
 | **Costs** — Track LLM usage costs | [View](python/costs/) | [View](javascript/costs/) | [View](go/costs/) |
 | **MCP Tools** — External tool integrations | [View](python/mcp-tools/) | [View](javascript/mcp-tools/) | [View](go/mcp-tools/) |
-| **Webhook Triggers** — Event-driven agent execution | [View](python/webhook-triggers/) | [View](javascript/webhook-triggers/) | [View](go/webhook-triggers/) |
+| **Agent Triggers** — Event-driven agent execution | [View](python/agent-triggers/) | [View](javascript/agent-triggers/) | [View](go/agent-triggers/) |
 | **A2A** — Agent-to-Agent communication | [View](python/a2a/) | [View](javascript/a2a/) | [View](go/a2a/) |
 | **Media Studio** — Generate images, speech, and video | [View](python/media-studio/) | [View](javascript/media-studio/) | [View](go/media-studio/) |
 | **Assets** — Manage generated media assets | [View](python/assets/) | [View](javascript/assets/) | [View](go/assets/) |

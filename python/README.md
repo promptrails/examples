@@ -30,7 +30,7 @@ uv run python/chat/main.py
 | [executions/](executions/) | Monitor execution history |
 | [costs/](costs/) | Track LLM usage costs |
 | [mcp-tools/](mcp-tools/) | MCP tool management |
-| [webhook-triggers/](webhook-triggers/) | Event-driven agent execution |
+| [agent-triggers/](agent-triggers/) | Event-driven agent execution |
 | [a2a/](a2a/) | Agent-to-Agent communication |
 | [media-studio/](media-studio/) | Generate images, speech, and video |
 | [assets/](assets/) | Manage generated media assets |
