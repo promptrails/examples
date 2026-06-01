@@ -34,17 +34,17 @@ export PROMPTRAILS_API_KEY="pr_key_..."
 
 **Python:**
 ```bash
-pip install "promptrails>=0.3.0"
+pip install "promptrails>=0.5.0"
 ```
 
 **JavaScript/TypeScript:**
 ```bash
-npm install @promptrails/sdk@^0.3.1
+npm install @promptrails/sdk@^0.5.0
 ```
 
 **Go:**
 ```bash
-go get github.com/promptrails/go-sdk@v0.3.1
+go get github.com/promptrails/go-sdk@v0.5.0
 ```
 
 ## Links
