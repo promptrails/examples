@@ -1,8 +1,19 @@
 # /// script
 # requires-python = ">=3.9"
-# dependencies = ["promptrails"]
+# dependencies = ["promptrails>=0.9.0"]
 # ///
-"""Prompt template management and execution."""
+#
+# NOTE (API v2): promptrails 0.9.0 is not yet on PyPI. Until it publishes, run
+# against the local sibling SDK from inside this folder, e.g.:
+#   uv run --with-editable ../../../python-sdk main.py
+# The pinned spec above reconciles automatically once 0.9.0 ships.
+"""Prompt template management — API v2.
+
+In v2 a prompt version is *content only*: system/user text (+ optional
+input_schema). Model, sampling, tools, output schema and cache TTL live on the
+agent version, not the prompt (see the ``agents`` example). Prompts are no
+longer runnable directly — attach one to an agent and call ``agents.execute``.
+"""
 
 import os
 from promptrails import PromptRails
@@ -16,34 +27,25 @@ prompt = client.prompts.create(
 )
 print(f"Created prompt: {prompt.id}")
 
-# Create a version with template
+# Create a content-only version. No llm_model_id / temperature / max_tokens
+# here — those belong to the agent version that references this prompt.
 version = client.prompts.create_version(
     prompt.id,
     version="1.0.0",
     system_prompt="You are a support ticket classifier.",
     user_prompt="Classify this ticket: {{ message }}",
-    llm_model_id="gpt-4o",
-    temperature=0.3,
-    max_tokens=100,
     input_schema={"type": "object", "properties": {"message": {"type": "string"}}},
     set_current=True,
     message="Initial classifier version",
 )
 print(f"Created version: {version.version}")
 
-# Run the prompt directly
-response = client.prompts.run_prompt(
+# Preview renders the template with sample input (no LLM call).
+preview = client.prompts.preview(
     prompt.id,
-    data={
-        "system_prompt": "You are a support ticket classifier.",
-        "user_prompt": "Classify: I want a refund for my order",
-        "llm_model_id": "gpt-4o",
-        "temperature": 0.3,
-    },
+    input={"message": "I want a refund for my order"},
 )
-print(f"Response: {response.content}")
-print(f"Tokens: {response.token_usage}")
-print(f"Cost: ${response.cost:.4f}")
+print(f"Rendered preview: {preview}")
 
 # List all prompts
 prompts = client.prompts.list(page=1, limit=10)

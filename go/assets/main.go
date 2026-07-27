@@ -15,7 +15,7 @@ func main() {
 
 	// List all assets with pagination
 	assets, err := client.Assets.List(ctx, &promptrails.ListAssetsParams{
-		ListParams: promptrails.ListParams{Limit: 10},
+		Limit: 10,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -23,15 +23,15 @@ func main() {
 	fmt.Printf("Total assets: %d\n", assets.Meta.Total)
 
 	for _, asset := range assets.Data {
-		fmt.Printf("  %s — %s\n", asset.ID, asset.Type)
-		fmt.Printf("    Provider: %s, Model: %s\n", asset.Provider, asset.Model)
+		fmt.Printf("  %s — %s\n", asset.ID, asset.MediaType)
+		fmt.Printf("    Provider: %s\n", asset.Provider)
 		fmt.Printf("    File: %s (%s)\n", asset.FileName, asset.ContentType)
 		fmt.Printf("    Size: %d bytes\n", asset.Size)
 	}
 
-	// Filter assets by type (e.g., only images)
+	// Filter assets by media type (e.g., only images)
 	images, err := client.Assets.List(ctx, &promptrails.ListAssetsParams{
-		Type: "image",
+		MediaType: "image",
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -59,17 +59,13 @@ func main() {
 		}
 		fmt.Printf("\nAsset detail:\n")
 		fmt.Printf("  ID: %s\n", asset.ID)
-		fmt.Printf("  Type: %s\n", asset.Type)
+		fmt.Printf("  Media type: %s\n", asset.MediaType)
 		fmt.Printf("  Provider: %s\n", asset.Provider)
-		fmt.Printf("  Model: %s\n", asset.Model)
 		fmt.Printf("  File: %s\n", asset.FileName)
 		fmt.Printf("  Content-Type: %s\n", asset.ContentType)
 		fmt.Printf("  Size: %d bytes\n", asset.Size)
-		if asset.Prompt != "" {
-			fmt.Printf("  Prompt: %s\n", asset.Prompt)
-		}
-		if asset.Cost != nil {
-			fmt.Printf("  Cost: $%.4f\n", *asset.Cost)
+		if len(asset.Metadata) > 0 {
+			fmt.Printf("  Metadata: %v\n", asset.Metadata)
 		}
 
 		// Get a signed URL for downloading the asset

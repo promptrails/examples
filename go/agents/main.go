@@ -9,17 +9,19 @@ import (
 	promptrails "github.com/promptrails/go-sdk"
 )
 
-// Agent versions carry a typed config. The go-sdk defines one concrete
-// type per agent kind (SimpleAgentConfig, ChainAgentConfig,
-// MultiAgentConfig, WorkflowAgentConfig, CompositeAgentConfig). Each
-// implements the AgentConfig interface and injects the "type"
-// discriminator on marshal.
+// PromptRails v2 has two agent kinds: "agent" (a prompt + optional tools /
+// sub-agents) and "workflow" (a deterministic DAG). The go-sdk models each as
+// a concrete AgentConfig — PromptAgentConfig or WorkflowAgentConfig — and
+// injects the "type" discriminator on marshal. Model + sampling (ModelConfig),
+// the run budget, approval policy, tools and sub-agents are version-scoped
+// siblings of Config, not part of it. Prompts are content-only.
 
 func main() {
 	client := promptrails.NewClient(os.Getenv("PROMPTRAILS_API_KEY"))
 	ctx := context.Background()
 
-	// Agent configs reference prompts by ID — create a prompt first.
+	// An agent references a prompt by id — create the content-only prompt
+	// first. Model/sampling live on the agent version, not the prompt.
 	prompt, err := client.Prompts.Create(ctx, &promptrails.CreatePromptParams{
 		Name:         "Support reply",
 		Description:  "Answers a customer question politely",
@@ -30,10 +32,11 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Create an agent and attach a typed SimpleAgentConfig version.
+	// Create an "agent" and attach a version. ModelConfig + RunBudget ride on
+	// the version alongside Config.
 	agent, err := client.Agents.Create(ctx, &promptrails.CreateAgentParams{
 		Name:        "Customer Support Bot",
-		Type:        "simple",
+		Type:        "agent",
 		Description: "Handles customer inquiries",
 	})
 	if err != nil {
@@ -42,13 +45,16 @@ func main() {
 	fmt.Printf("Created agent: %s\n", agent.ID)
 
 	temperature := 0.7
+	maxCost := 0.50
 	version, err := client.Agents.CreateVersion(ctx, agent.ID, &promptrails.CreateVersionParams{
 		Version: "1.0.0",
 		Message: "Initial version",
-		Config: promptrails.SimpleAgentConfig{
-			PromptID:    prompt.ID,
+		Config:  promptrails.PromptAgentConfig{PromptID: prompt.ID},
+		ModelConfig: &promptrails.ModelConfig{
+			ModelID:     "gpt-4o",
 			Temperature: &temperature,
 		},
+		RunBudget:  &promptrails.RunBudget{MaxCost: &maxCost},
 		SetCurrent: true,
 	})
 	if err != nil {
@@ -68,8 +74,8 @@ func main() {
 	fmt.Printf("Cost: $%.4f\n", result.Cost)
 	fmt.Printf("Trace ID: %s\n", result.TraceID)
 
-	// Chain two prompts with ChainAgentConfig. PromptLink identifies
-	// each step by role + sort_order.
+	// A "workflow" agent runs a deterministic DAG. Each WorkflowNode pins a
+	// prompt and declares its dependencies.
 	extract, err := client.Prompts.Create(ctx, &promptrails.CreatePromptParams{
 		Name:         "Extract",
 		Description:  "Extracts named entities",
@@ -80,31 +86,32 @@ func main() {
 		log.Fatal(err)
 	}
 
-	chainAgent, err := client.Agents.Create(ctx, &promptrails.CreateAgentParams{
-		Name:        "Extract-then-Summarize",
-		Type:        "chain",
-		Description: "Two-step reasoning chain",
+	workflowAgent, err := client.Agents.Create(ctx, &promptrails.CreateAgentParams{
+		Name:        "Extract-then-Answer",
+		Type:        "workflow",
+		Description: "Two-step workflow",
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if _, err := client.Agents.CreateVersion(ctx, chainAgent.ID, &promptrails.CreateVersionParams{
+	if _, err := client.Agents.CreateVersion(ctx, workflowAgent.ID, &promptrails.CreateVersionParams{
 		Version: "1.0.0",
-		Message: "Initial chain",
-		Config: promptrails.ChainAgentConfig{
-			PromptIDs: []promptrails.PromptLink{
-				{PromptID: extract.ID, Role: "extract", SortOrder: 0},
-				{PromptID: prompt.ID, Role: "answer", SortOrder: 1},
+		Message: "Initial workflow",
+		Config: promptrails.WorkflowAgentConfig{
+			Nodes: []promptrails.WorkflowNode{
+				{ID: "extract", PromptID: extract.ID, DependsOn: []string{}},
+				{ID: "answer", PromptID: prompt.ID, DependsOn: []string{"extract"}},
 			},
 		},
-		SetCurrent: true,
+		ModelConfig: &promptrails.ModelConfig{ModelID: "gpt-4o-mini"},
+		SetCurrent:  true,
 	}); err != nil {
 		log.Fatal(err)
 	}
 
 	// Housekeeping
-	agents, err := client.Agents.List(ctx, &promptrails.ListAgentsParams{Type: "simple"})
+	agents, err := client.Agents.List(ctx, &promptrails.ListAgentsParams{Type: "agent"})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -112,7 +119,7 @@ func main() {
 		fmt.Printf("  - %s (%s) — %s\n", a.Name, a.Type, a.Status)
 	}
 
-	_ = client.Agents.Delete(ctx, chainAgent.ID)
+	_ = client.Agents.Delete(ctx, workflowAgent.ID)
 	_ = client.Agents.Delete(ctx, agent.ID)
 	_ = client.Prompts.Delete(ctx, extract.ID)
 	_ = client.Prompts.Delete(ctx, prompt.ID)

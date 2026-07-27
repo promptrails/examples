@@ -11,8 +11,8 @@ console.log(`Total assets: ${assets.meta.total}`);
 for (const asset of assets.data) {
   console.log(`  ${asset.id} — ${asset.type}`);
   console.log(`    Provider: ${asset.provider}, Model: ${asset.model}`);
-  console.log(`    File: ${asset.file_name} (${asset.content_type})`);
-  console.log(`    Size: ${asset.size} bytes`);
+  console.log(`    File: ${asset.file_name} (${asset.mime_type})`);
+  console.log(`    Size: ${asset.file_size} bytes`);
 }
 
 // Filter assets by type (e.g., only images)
@@ -39,13 +39,11 @@ if (assets.data.length > 0) {
   console.log(`  Provider: ${asset.provider}`);
   console.log(`  Model: ${asset.model}`);
   console.log(`  File: ${asset.file_name}`);
-  console.log(`  Content-Type: ${asset.content_type}`);
-  console.log(`  Size: ${asset.size} bytes`);
+  console.log(`  MIME type: ${asset.mime_type}`);
+  console.log(`  Size: ${asset.file_size} bytes`);
+  console.log(`  Execution: ${asset.execution_id}`);
   if (asset.prompt) {
     console.log(`  Prompt: ${asset.prompt}`);
-  }
-  if (asset.cost) {
-    console.log(`  Cost: $${asset.cost.toFixed(4)}`);
   }
 
   // Get a signed URL for downloading the asset

@@ -1,7 +1,12 @@
 # /// script
 # requires-python = ">=3.9"
-# dependencies = ["promptrails"]
+# dependencies = ["promptrails>=0.9.0"]
 # ///
+#
+# NOTE (API v2): promptrails 0.9.0 is not yet on PyPI. Until it publishes, run
+# against the local sibling SDK from inside this folder, e.g.:
+#   uv run --with-editable ../../../python-sdk main.py
+# The pinned spec above reconciles automatically once 0.9.0 ships.
 """Agent-to-Agent (A2A) communication protocol."""
 
 import os
@@ -24,8 +29,11 @@ task = client.a2a.send_message(
     blocking=True,
 )
 print(f"Task: {task.id}")
-print(f"Status: {task.status}")
-print(f"Result: {task.result}")
+print(f"State: {task.status.state if task.status else 'unknown'}")
+# Results come back as artifacts, each a list of parts.
+for artifact in task.artifacts:
+    for part in artifact.parts:
+        print(f"Result: {part.text}")
 
 # Send a non-blocking message
 task = client.a2a.send_message(
@@ -33,11 +41,12 @@ task = client.a2a.send_message(
     message="Generate a monthly report",
     blocking=False,
 )
-print(f"Task created: {task.id} (status: {task.status})")
+state = task.status.state if task.status else "unknown"
+print(f"Task created: {task.id} (state: {state})")
 
 # Poll for completion
 task = client.a2a.get_task(task.id)
-print(f"Task status: {task.status}")
+print(f"Task state: {task.status.state if task.status else 'unknown'}")
 
 # List tasks
 tasks = client.a2a.list_tasks(limit=5)

@@ -18,8 +18,13 @@ const task = await client.a2a.sendMessage(
   { blocking: true },
 );
 console.log(`Task: ${task.id}`);
-console.log(`Status: ${task.status}`);
-console.log(`Result:`, task.result);
+console.log(`State: ${task.status?.state}`);
+// Results come back as artifacts, each a list of parts.
+for (const artifact of task.artifacts ?? []) {
+  for (const part of artifact.parts) {
+    console.log(`Result: ${part.text}`);
+  }
+}
 
 // Send a non-blocking message
 const asyncTask = await client.a2a.sendMessage(
@@ -27,16 +32,16 @@ const asyncTask = await client.a2a.sendMessage(
   "Generate a monthly report",
   { blocking: false },
 );
-console.log(`Task created: ${asyncTask.id} (status: ${asyncTask.status})`);
+console.log(`Task created: ${asyncTask.id} (state: ${asyncTask.status?.state})`);
 
 // Poll for completion
 const updated = await client.a2a.getTask(asyncTask.id);
-console.log(`Task status: ${updated.status}`);
+console.log(`Task state: ${updated.status?.state}`);
 
 // List tasks
 const tasks = await client.a2a.listTasks({ limit: 5 });
 for (const t of tasks.data) {
-  console.log(`  ${t.id} — ${t.status}`);
+  console.log(`  ${t.id} — ${t.status?.state}`);
 }
 
 // Cancel a running task

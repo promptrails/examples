@@ -1,8 +1,13 @@
 # /// script
 # requires-python = ">=3.9"
-# dependencies = ["promptrails"]
+# dependencies = ["promptrails>=0.9.0"]
 # ///
-"""Execution tracing and observability."""
+#
+# NOTE (API v2): promptrails 0.9.0 is not yet on PyPI. Until it publishes, run
+# against the local sibling SDK from inside this folder, e.g.:
+#   uv run --with-editable ../../../python-sdk main.py
+# The pinned spec above reconciles automatically once 0.9.0 ships.
+"""Execution tracing and observability — API v2."""
 
 import os
 from promptrails import PromptRails
@@ -20,7 +25,6 @@ for trace in traces.data:
     print(f"    Duration: {trace.duration_ms}ms")
     if trace.cost:
         print(f"    Cost: ${trace.cost:.4f}")
-    print()
 
 # Get all spans for a specific trace
 if traces.data:
@@ -30,5 +34,15 @@ if traces.data:
     for span in spans:
         indent = "  " if span.parent_span_id else ""
         print(f"  {indent}{span.name} ({span.kind}) — {span.duration_ms}ms")
+
+# Aggregate stats over a filtered set of traces (cost, tokens, latency, errors)
+summary = client.traces.get_summary(date_from="2026-01-01")
+print("\nSummary since 2026-01-01:")
+print(f"  Traces: {summary.total_traces}, Cost: ${summary.total_cost:.2f}")
+print(f"  Tokens: {summary.total_tokens}, Errors: {summary.error_count}")
+
+# PII-masking report over the same filter set
+pii = client.traces.pii_report(date_from="2026-01-01")
+print(f"\nPII report: {pii}")
 
 client.close()
