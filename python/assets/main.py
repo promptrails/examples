@@ -1,7 +1,12 @@
 # /// script
 # requires-python = ">=3.9"
-# dependencies = ["promptrails"]
+# dependencies = ["promptrails>=0.9.0"]
 # ///
+#
+# NOTE (API v2): promptrails 0.9.0 is not yet on PyPI. Until it publishes, run
+# against the local sibling SDK from inside this folder, e.g.:
+#   uv run --with-editable ../../../python-sdk main.py
+# The pinned spec above reconciles automatically once 0.9.0 ships.
 """Manage generated media assets."""
 
 import os
@@ -16,8 +21,8 @@ print(f"Total assets: {assets.meta.total}")
 for asset in assets.data:
     print(f"  {asset.id} — {asset.type}")
     print(f"    Provider: {asset.provider}, Model: {asset.model}")
-    print(f"    File: {asset.file_name} ({asset.content_type})")
-    print(f"    Size: {asset.size} bytes")
+    print(f"    File: {asset.file_name} ({asset.mime_type})")
+    print(f"    Size: {asset.file_size} bytes")
     print()
 
 # Filter assets by type (e.g., only images)
@@ -40,12 +45,11 @@ if assets.data:
     print(f"  Provider: {asset.provider}")
     print(f"  Model: {asset.model}")
     print(f"  File: {asset.file_name}")
-    print(f"  Content-Type: {asset.content_type}")
-    print(f"  Size: {asset.size} bytes")
-    if asset.prompt:
-        print(f"  Prompt: {asset.prompt}")
-    if asset.cost:
-        print(f"  Cost: ${asset.cost:.4f}")
+    print(f"  MIME type: {asset.mime_type}")
+    print(f"  Size: {asset.file_size} bytes")
+    print(f"  Execution: {asset.execution_id}")
+    if asset.metadata:
+        print(f"  Metadata: {asset.metadata}")
 
     # Get a signed URL for downloading the asset
     # Signed URLs are temporary (typically 1 hour) and provide direct access to the file

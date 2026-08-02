@@ -19,7 +19,7 @@ func main() {
 		log.Fatal(err)
 	}
 	for _, t := range tools.Data {
-		fmt.Printf("  %s (%s) — %s\n", t.Name, t.Type, t.Status)
+		fmt.Printf("  %s — %s (%s)\n", t.Name, t.Description, t.ServerURL)
 	}
 
 	// Create a new MCP tool

@@ -22,10 +22,15 @@ func main() {
 	fmt.Printf("Agent: %s\n", card.Name)
 	fmt.Printf("Description: %s\n", card.Description)
 
-	// Send a message
+	// Send a message. The A2A message is a raw map with a role and parts.
 	task, err := client.A2A.SendMessage(ctx, &promptrails.A2ASendMessageParams{
 		AgentID: agentID,
-		Message: "Analyze the sales data for Q1 2026",
+		Message: map[string]any{
+			"role": "user",
+			"parts": []map[string]any{
+				{"type": "text", "text": "Analyze the sales data for Q1 2026"},
+			},
+		},
 	})
 	if err != nil {
 		log.Fatal(err)

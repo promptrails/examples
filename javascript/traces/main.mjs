@@ -13,7 +13,6 @@ for (const trace of traces.data) {
   console.log(`    Span: ${trace.name} (${trace.kind})`);
   console.log(`    Status: ${trace.status}, Duration: ${trace.duration_ms}ms`);
   if (trace.cost) console.log(`    Cost: $${trace.cost.toFixed(4)}`);
-  console.log();
 }
 
 // Get all spans for a specific trace
@@ -28,3 +27,15 @@ if (traces.data.length > 0) {
     );
   }
 }
+
+// Aggregate stats over a filtered set of traces (cost, tokens, latency, errors)
+const summary = await client.traces.getSummary({ date_from: "2026-01-01" });
+console.log(`\nSummary since 2026-01-01:`);
+console.log(
+  `  Traces: ${summary.total_traces}, Cost: $${summary.total_cost.toFixed(2)}`,
+);
+console.log(`  Tokens: ${summary.total_tokens}, Errors: ${summary.error_count}`);
+
+// PII-masking report over the same filter set
+const pii = await client.traces.piiReport({ date_from: "2026-01-01" });
+console.log(`\nPII report:`, pii);

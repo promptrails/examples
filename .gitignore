@@ -1,0 +1,14 @@
+# Dependency + build artifacts — never committed
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+
+# Go workspace override (used only for local, unpublished-SDK validation)
+go.work
+go.work.sum
+
+# Python
+.venv/
+__pycache__/
+*.pyc

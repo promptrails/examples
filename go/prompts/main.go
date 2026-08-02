@@ -9,10 +9,10 @@ import (
 	promptrails "github.com/promptrails/go-sdk"
 )
 
-// The Go SDK's Prompts.Create accepts the prompt body inline —
-// system_prompt and user_prompt live on CreatePromptParams, so you
-// don't need a separate CreateVersion call to make a runnable prompt.
-// Prompts.Run then executes it with live input.
+// In v2 a prompt version is content only: system/user text (+ optional input
+// schema). Model, sampling and output schema live on the agent version, not
+// the prompt. Prompts are no longer runnable directly — attach one to an agent
+// and call Agents.Execute (see the agents example).
 
 func main() {
 	client := promptrails.NewClient(os.Getenv("PROMPTRAILS_API_KEY"))
@@ -30,17 +30,22 @@ func main() {
 	}
 	fmt.Printf("Created prompt: %s\n", prompt.ID)
 
-	// Run the prompt — UserPrompt overrides the stored body for this
-	// single invocation; Input supplies variables for Jinja templating.
-	response, err := client.Prompts.Run(ctx, prompt.ID, &promptrails.RunPromptParams{
-		UserPrompt: "Classify this ticket: {{ message }}",
-		LLMModelID: "gpt-4o",
-		Input:      map[string]any{"message": "I want a refund for my order"},
+	// Add a content-only version — no model/sampling fields here.
+	version, err := client.Prompts.CreateVersion(ctx, prompt.ID, &promptrails.CreatePromptVersionParams{
+		Version:      "1.0.0",
+		SystemPrompt: "You are a support ticket classifier.",
+		UserPrompt:   "Classify this ticket: {{ message }}",
+		InputSchema: map[string]any{
+			"type":       "object",
+			"properties": map[string]any{"message": map[string]any{"type": "string"}},
+		},
+		SetCurrent: true,
+		Message:    "Initial classifier version",
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("Output: %s\n", response.Output)
+	fmt.Printf("Created version: %s\n", version.Version)
 
 	// List prompts
 	prompts, err := client.Prompts.List(ctx, nil)
