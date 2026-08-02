@@ -2,11 +2,8 @@
 
 All examples use [uv](https://docs.astral.sh/uv/) inline script metadata — no virtual environment setup needed.
 
-> **⚠️ API v2 (unreleased):** every script pins `promptrails>=0.9.0`, which is **not yet on PyPI**.
-> Until it publishes, resolve the local sibling SDK (branch `feat/api-v2`) with uv's
-> `--with-editable` flag — run **from inside the example folder** so the relative path resolves:
-> `cd python/agents && uv run --with-editable ../../../python-sdk main.py`. Once `promptrails 0.9.0`
-> ships to PyPI, the plain `uv run main.py` command below works unchanged — no edits needed.
+Every script pins `promptrails>=0.9.0` (API v2), which is published on PyPI — uv
+resolves it automatically on first run.
 
 ## Prerequisites
 
@@ -18,14 +15,10 @@ export PROMPTRAILS_API_KEY="pr_key_..."
 ## Running
 
 ```bash
-# After promptrails 0.9.0 publishes to PyPI:
 cd python/basic && uv run main.py
 cd python/agents && uv run main.py
 cd python/chat && uv run main.py
 # ... etc
-
-# Before it publishes (resolve the local SDK), e.g.:
-cd python/agents && uv run --with-editable ../../../python-sdk main.py
 ```
 
 ## Examples
