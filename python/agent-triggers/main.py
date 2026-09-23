@@ -18,6 +18,20 @@ import os
 
 from promptrails import PromptRails
 
+
+def preview(value):
+    """Last four characters, so two values can be told apart in output.
+
+    A trigger's token and secret are returned once, by the create call. This
+    example prints them masked on purpose: an example is a pattern people
+    copy, and the pattern worth copying is reading them off the object and
+    putting them straight into a secret manager.
+    """
+    if not value:
+        return "(none)"
+    return "..." + value[-4:] if len(value) > 4 else "*" * len(value)
+
+
 client = PromptRails(api_key=os.environ["PROMPTRAILS_API_KEY"])
 
 AGENT_ID = os.environ.get("AGENT_ID", "your-agent-id")
@@ -29,8 +43,8 @@ trigger = client.agent_triggers.create(
     generate_secret=True,
 )
 print(f"Generic trigger created: {trigger.id}")
-print(f"  Token:  {trigger.token}")
-print(f"  Secret: {trigger.secret}")
+print(f"  Token:  {preview(trigger.token)}   # goes in the webhook URL")
+print(f"  Secret: {preview(trigger.secret)}   # signs the incoming payloads")
 
 # 2. Slack trigger — point at workspace credentials for signing secret + bot token
 slack_trigger = client.agent_triggers.create(
