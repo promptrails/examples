@@ -20,12 +20,11 @@ from promptrails import PromptRails
 
 
 def preview(value):
-    """Last four characters, so two values can be told apart in output.
+    """Last four characters, so two triggers can be told apart in output.
 
-    A trigger's token and secret are returned once, by the create call. This
-    example prints them masked on purpose: an example is a pattern people
-    copy, and the pattern worth copying is reading them off the object and
-    putting them straight into a secret manager.
+    An example is a pattern people copy, so this one does not copy a
+    credential into stdout: the webhook token is shown masked, and the
+    signing secret is not shown at all.
     """
     if not value:
         return "(none)"
@@ -44,7 +43,10 @@ trigger = client.agent_triggers.create(
 )
 print(f"Generic trigger created: {trigger.id}")
 print(f"  Token:  {preview(trigger.token)}   # goes in the webhook URL")
-print(f"  Secret: {preview(trigger.secret)}   # signs the incoming payloads")
+# The signing secret is returned once, by this call, and never again. It is
+# not printed even masked: read trigger.secret here and hand it straight to
+# wherever you keep secrets.
+print("  Secret: returned once — store trigger.secret now")
 
 # 2. Slack trigger — point at workspace credentials for signing secret + bot token
 slack_trigger = client.agent_triggers.create(
